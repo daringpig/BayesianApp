@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import hu.pe.lirfu.bayesianapp.EngineBayes;
+import hu.pe.lirfu.bayesianapp.util.EngineBayes;
 import hu.pe.lirfu.bayesianapp.R;
 
 /**

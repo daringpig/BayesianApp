@@ -15,6 +15,9 @@ import hu.pe.lirfu.bayesianapp.fragments.DataFragment;
 import hu.pe.lirfu.bayesianapp.fragments.MainFragment;
 import hu.pe.lirfu.bayesianapp.fragments.SettingsFragment;
 import hu.pe.lirfu.bayesianapp.fragments.StatisticsFragment;
+import hu.pe.lirfu.bayesianapp.util.DemoSource;
+import hu.pe.lirfu.bayesianapp.util.EngineBayes;
+import hu.pe.lirfu.bayesianapp.util.Globals;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -22,7 +25,7 @@ public class MainActivity extends AppCompatActivity
     DrawerLayout drawer;
     NavigationView navigationView;
 
-    static int navItemIndex = 0;
+    static int currentItemIndex = 0;
 
     private String[] fragmentTitles;
 
@@ -46,19 +49,24 @@ public class MainActivity extends AppCompatActivity
         fragmentTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
 
         if (savedInstanceState == null) {
-            navItemIndex = 0;
+            currentItemIndex = 0;
             loadHomeFragment(new MainFragment());
         }
+
+        // Load the data.
+        EngineBayes.getInstance().loadEntriesFrom(this, new DemoSource());
+
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+
+        if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        else
             super.onBackPressed();
-        }
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -69,16 +77,16 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            navItemIndex = 0;
+            currentItemIndex = 0;
             fragment = new MainFragment();
         } else if (id == R.id.nav_statistics) {
-            navItemIndex = 1;
+            currentItemIndex = 1;
             fragment = new StatisticsFragment();
         } else if (id == R.id.nav_data) {
-            navItemIndex = 2;
+            currentItemIndex = 2;
             fragment = new DataFragment();
         } else if (id == R.id.nav_settings) {
-            navItemIndex = 3;
+            currentItemIndex = 3;
             fragment = new SettingsFragment();
         }
 
@@ -96,8 +104,8 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        getSupportActionBar().setTitle(fragmentTitles[navItemIndex]);
-        navigationView.getMenu().getItem(navItemIndex).setChecked(true);
+        getSupportActionBar().setTitle(fragmentTitles[currentItemIndex]);
+        navigationView.getMenu().getItem(currentItemIndex).setChecked(true);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left,

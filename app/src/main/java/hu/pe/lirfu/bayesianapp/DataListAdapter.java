@@ -2,68 +2,39 @@ package hu.pe.lirfu.bayesianapp;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import hu.pe.lirfu.bayesianapp.util.Pair;
 
 /**
  * Created by lirfu on 18.06.17..
  */
 
 public class DataListAdapter implements ListAdapter {
-    private static DataListAdapter dataListAdapter;
 
-    private ArrayList<DataEntry> data;
+    private ArrayList<Pair> data;
     private ArrayList<DataSetObserver> observers;
     private ArrayList<View> views;
 
-    public static DataListAdapter getInstance() {
-        if (dataListAdapter == null)
-            dataListAdapter = new DataListAdapter();
-
-        return dataListAdapter;
-    }
-
-    private DataListAdapter() {
+    public DataListAdapter(ArrayList<Pair> data, boolean sort) {
         observers = new ArrayList<>();
-        data = new ArrayList<>();
+        this.data = data;
+        if (sort)
+            Collections.sort(this.data, new Comparator<Pair>() {
+                @Override
+                public int compare(Pair pair, Pair t1) {
+                    return pair.getName().compareTo(t1.getName());
+                }
+            });
         views = new ArrayList<>();
-
-        try {
-
-            BufferedReader reader = new BufferedReader(new FileReader(Globals.DATA_FILENAME));
-
-            String tmp;
-            while ((tmp = reader.readLine()) != null)
-                data.add(DataEntry.parseFromString(tmp));
-
-        } catch (FileNotFoundException e) {
-            Log.e(Globals.TAG, "Data file not found: " + Globals.DATA_FILENAME);
-        } catch (IOException e) {
-            Log.e(Globals.TAG, "Error reading data file: " + e.getMessage());
-        }
-
-        data.add(new DataEntry("DA", "suncano", "vruce"));
-        data.add(new DataEntry("DA", "suncano", "toplo"));
-        data.add(new DataEntry("DA", "oblacno", "toplo"));
-        data.add(new DataEntry("NE", "suncano", "vruce"));
-        data.add(new DataEntry("NE", "oblacno", "hladno"));
-        data.add(new DataEntry("NE", "kisa", "hladno"));
-        data.add(new DataEntry("DA", "suncano", "vruce"));
-        data.add(new DataEntry("DA", "suncano", "toplo"));
-        data.add(new DataEntry("NE", "kisa", "toplo"));
-        data.add(new DataEntry("DA", "oblacno", "vruce"));
-
-        EngineBayes.getInstance().addEntries(data).calculate();
     }
 
     @Override
@@ -98,7 +69,7 @@ public class DataListAdapter implements ListAdapter {
 
     @Override
     public long getItemId(int i) {
-        return 0;
+        return data.get(i) != null ? i : -1;
     }
 
     @Override
@@ -114,8 +85,8 @@ public class DataListAdapter implements ListAdapter {
             view = inflater.inflate(R.layout.list_entry, viewGroup, false);
         }
 
-        ((TextView)view.findViewById(R.id.entry_result)).setText(data.get(i).getResult());
-        ((TextView)view.findViewById(R.id.entry_title)).setText(data.get(i).getKeyInitials());
+        ((TextView) view.findViewById(R.id.entry_result)).setText(data.get(i).getName());
+        ((TextView) view.findViewById(R.id.entry_title)).setText(data.get(i).getValue().toString());
 
         return view;
     }

@@ -1,31 +1,31 @@
-package hu.pe.lirfu.bayesianapp;
+package hu.pe.lirfu.bayesianapp.util;
 
 /**
  * Created by lirfu on 18.06.17..
  */
 
 public class DataEntry {
-    private String[] keys;
+    private String[] features;
     private String result;
 
-    DataEntry(String result, String... keys) {
-        this.keys = keys;
+    DataEntry(String result, String... features) {
+        this.features = features;
         this.result = result;
     }
 
-    public String[] getKeys() {
-        return keys;
+    public String[] getFeatures() {
+        return features;
     }
 
     public String getResult() {
         return result;
     }
 
-    public String getKeyInitials(){
-        String str="";
+    public String getfeatureInitials() {
+        String str = "";
 
-        for(String key:keys)
-        str+=key.charAt(0);
+        for (String feature : features)
+            str += feature.charAt(0);
 
         return str;
     }
@@ -34,7 +34,7 @@ public class DataEntry {
     public String toString() {
         String s = "";
 
-        for (String d : keys)
+        for (String d : features)
             s += d + ",";
 
         s += result;
@@ -44,7 +44,7 @@ public class DataEntry {
 
     /**
      * Interprets the CSV format.<br>
-     * First n-1 entries become keys, last entry becomes the result.
+     * First n-1 entries become features, last entry becomes the result.
      */
     public static DataEntry parseFromString(String string) {
         String[] parts = string.split(",");
@@ -59,9 +59,9 @@ public class DataEntry {
 
     @Override
     public boolean equals(Object obj) {
-        if(keys.length != ((DataEntry)obj).keys.length) return false;
+        if (features.length != ((DataEntry) obj).features.length) return false;
 
-        for (String s : keys)
+        for (String s : features)
             if (!s.equals(obj))
                 return false;
 
